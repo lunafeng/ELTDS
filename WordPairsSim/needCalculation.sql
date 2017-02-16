@@ -1,0 +1,5 @@
+SELECT WORD1,
+	WORD2
+FROM WordsSimilarityExpect D
+WHERE (WORD1,WORD2) NOT IN 
+(SELECT WORD1,WORD2 FROM WordsSimilarityWord2Vec);

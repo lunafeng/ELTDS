@@ -1,0 +1,46 @@
+This document contains the instructions to find dominant senses
+for an ambiguous word and use dominant senses to find the correct
+sense of an ambiguous word in a tweet context.
+
+Step 1 - detect spots in tweets
+Run spotsbyTagme.py under SpotsDetection/
+This will generate a file called "original_tweets_spots.csv" to store all the spots for each tweet
+Run spotIsAmbig.py under SpotsDetection/
+This will generate a file called "spots_ambig" to store all the spots along with identifier whether its ambigous or not
+Copy both "original_tweets_spots.csv" and "spots_ambig" to DataSets/
+
+Step 2 - calculate static distribution for each spot
+Run spotDistribution.py under CreateDistri/ to apply random walk and save the distributions under distributions/
+Run topNRelated.py under CreateDistri/ to find top 2000 words from the static distribution for each ambigous spot and store the results under topN/
+Run filter.py to under CreateDistri/ to filter out noisy words and store the results in filtered/
+Run filteredDistribution.py under CreateDistri/ to calculate distribution of top k filtered words and store the distributions under distributions/
+
+Step 3 - calculate the word pairs similarity
+Run getAllWordPairs.py under WordPairsSim/ to store the word pairs that expect to be calculated in mysql
+Run needCalculation.sql under WordPairsSim/ to find word pairs that haven't be calculated, output to file called "wordPairs"
+Run wordsSimilarity.py under WordPairsSim/ to calculate word pairs similarity and store in mysql
+
+If you want to calculate the word pairs similarity by using word2vec, run the scripts under word2vec/
+
+Step 4 - create words graph for each ambigous spot based on the word pairs similarity calculated in Step 3
+Run createGraphbySpot.py under CreateGraph/ to generate words graphs and store the results under graphs/
+
+Step 5 - create clusters from the words graph generated from Step 4
+Run createClusterbySpot.py under ClusterGraph/ and generate clusters for each word graph and store the results under wordClusters/
+
+Step 6 - map each word cluster to a Wikipedia entry
+Run mapping.py under MapWiki/ to generate a Wikipedia entry for each cluster and store results in senses/
+
+Step 7 - calculate the similarity between tweet and each sense of ambigous words in the tweet
+Run storeTweetConceptSim.py under TweetsWikiConceptsSim/ to calculate the similarity between each tweet and senses for each ambigous word and store results in mysql
+
+Step 8 - annotate the tweets by selecting the sense with highest similarity with the tweet
+Run annotate.py under ContextAnnotation/ to store annotation results under AnnotateRes/
+
+Step 9 - evaluation the annotations
+Run createQrels.py under Evaluations/ to create the results as the format for trec evaluation
+Run refine.py to refine the results
+Run precision@1.py, recall.py to get corresponding results
+Run ./trec_eval GOLD_STANDARD MY_ANNOTATIONS to get trec evaluation results
+
+
